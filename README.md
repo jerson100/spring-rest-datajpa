@@ -4,8 +4,13 @@
 
 Proyecto Spring Boot con las sgts dependencias & starters:
 
+### Starters para persistencia
+
 * H2 - Base de datos en memoria
 * Spring Data JPA
+
+### Starters para web
+
 * Spring Web
 * Spring Boot Dev Tools
 

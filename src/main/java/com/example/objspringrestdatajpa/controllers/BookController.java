@@ -3,6 +3,8 @@ package com.example.objspringrestdatajpa.controllers;
 import com.example.objspringrestdatajpa.entities.Book;
 import com.example.objspringrestdatajpa.repositories.BookRepository;
 import org.apache.coyote.Response;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,6 +14,9 @@ import java.util.Optional;
 
 @RestController
 public class BookController {
+
+    //Mostrar mensajes de error, etc.
+    private final Logger log = LoggerFactory.getLogger(BookController.class);
 
     private BookRepository bookRepository;
 
@@ -58,11 +63,44 @@ public class BookController {
     //Crear un nuevo libro en la base de datos
     //el objeto header tiene info de la cabecera de la solicitud :)
     @PostMapping(path = "/api/v1/books")
-    public Book createBook(@RequestBody Book newBook, @RequestHeader HttpHeaders header){
-        return bookRepository.save(newBook);
+    public ResponseEntity<Book> createBook(@RequestBody Book newBook, @RequestHeader HttpHeaders header){
+        if(newBook.getId() != null){
+            log.warn("Trying to create a book with id");
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(bookRepository.save(newBook));
     }
-    //Actualizar un libro de la base de datos
-    //Eliminar un libro de la base de datos
 
+    //Actualizar un libro de la base de datos
+    @PutMapping(path = "/api/v1/books")
+    public ResponseEntity<Book> updateBook(@RequestBody Book book){
+        if(book.getId()==null){
+            log.warn("trying to update a non existent book");
+            return ResponseEntity.badRequest().build();
+        }
+        if(!bookRepository.existsById(book.getId())){
+            log.warn("trying to update a non existent book");
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(bookRepository.save(book));
+    }
+
+    //Eliminar un libro de la base de datos
+    @DeleteMapping(path = "/api/v1/books/{idBook}")
+    public ResponseEntity<Book> deleteBookById(@PathVariable long idBook){
+        if(!bookRepository.existsById(idBook)){
+            log.warn("trying to delete a non existent book");
+            return ResponseEntity.notFound().build();
+        }
+        bookRepository.deleteById(idBook);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping(path = "/api/v1/books")
+    public ResponseEntity<Book> deleteBooks(){
+        log.info("Deleting all books");
+        bookRepository.deleteAll();
+        return ResponseEntity.noContent().build();
+    }
 
 }
