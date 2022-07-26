@@ -2,6 +2,7 @@ package com.example.objspringrestdatajpa;
 
 import com.example.objspringrestdatajpa.entities.Book;
 import com.example.objspringrestdatajpa.repositories.BookRepository;
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
